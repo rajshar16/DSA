@@ -1,15 +1,24 @@
 class Solution {
 public:
     bool containsNearbyDuplicate(vector<int>& nums, int k) {
-         unordered_map<int,int>cntmap;
-        for(int i=0;i<nums.size();i++){
-           // Check if the number exists in the map AND distance is <= k
-            if(cntmap.count(nums[i])&& i-cntmap[nums[i]]<=k){
+        unordered_set<int> window;
+        
+        for (int i = 0; i < nums.size(); i++) {
+            // If the current number is already in our window, we found a match
+            if (window.count(nums[i])) {
                 return true;
             }
-            else
-             cntmap[nums[i]]=i;;
+            
+            // Add the current number to the window
+            window.insert(nums[i]);
+            
+            // Keep the window size at most k
+            // If we exceed k, remove the oldest element to slide the window forward
+            if (window.size() > k) {
+                window.erase(nums[i - k]);
+            }
         }
-        return false;  
+        
+        return false;
     }
 };

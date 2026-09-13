@@ -1,19 +1,27 @@
 class Solution {
 public:
     vector<int> singleNumber(vector<int>& nums) {
-      vector<int>arr;  
-            map<int,int> mpp;
- for(auto it = nums.begin(); it != nums.end(); it++){    
-            mpp[*it]++;
+        long long xorr = 0; 
+        for (int i=0;i< nums.size();i++) {
+            xorr ^= nums[i];
         }
-      
-   for(auto it = mpp.begin(); it != mpp.end(); it++){
-           
-            if(it->second==1){
-                arr.push_back(it->first); 
+
+        // Isolate the rightmost set bit. 
+        // Using long long prevents overflow with INT_MIN (-2147483648)
+        long long diff_bit = xorr & (-xorr);
+
+        int num1 = 0;
+        int num2 = 0;
+
+        // Partition the array into two groups based on the distinguishing bit
+        for (int i=0;i<nums.size();i++) {
+            if (nums[i] & diff_bit) {// check true or false
+                num1 ^= nums[i];
+            } else {
+                num2 ^= nums[i];
             }
-    }
-    return arr;
-    
+        }
+
+        return {num1, num2};
     }
 };

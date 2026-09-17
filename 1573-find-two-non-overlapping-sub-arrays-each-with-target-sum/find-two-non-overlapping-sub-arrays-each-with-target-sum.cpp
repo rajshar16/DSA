@@ -1,44 +1,53 @@
 class Solution {
 public:
     int minSumOfLengths(vector<int>& arr, int target) {
+        
         int n = arr.size();
+        const int INF = 1e9; // Use a large number to represent infinity
         
-        // min_len[i] will store the minimum length of a valid sub-array 
-        // found so far up to index i.
-        vector<int> min_len(n, INT_MAX / 2); 
+        vector<int> prefix(n, INF);
+        vector<int> suffix(n, INF);
         
-        int left = 0, sum = 0;
-        int ans = INT_MAX;
-        int best_so_far = INT_MAX / 2;
-        
+        // 1. Build the prefix array using a sliding window
+        int sum = 0, left = 0;
+        int min_len = INF;
         for (int right = 0; right < n; ++right) {
             sum += arr[right];
-            
-            // Shrink the window if the sum exceeds the target
             while (sum > target && left <= right) {
                 sum -= arr[left];
                 left++;
             }
-            
-            // When we find a valid sub-array
             if (sum == target) {
-                int current_length = right - left + 1;
-                
-                // If there's a non-overlapping valid sub-array before the current one,
-                // add its minimum length to our current length and update the answer.
-                if (left > 0) {
-                    ans = min(ans, current_length + min_len[left - 1]);
-                }
-                
-                // Update the best minimum length found so far
-                best_so_far = min(best_so_far, current_length);
+                min_len = min(min_len, right - left + 1);
             }
-            
-            // Record the best minimum length ending at or before 'right'
-            min_len[right] = best_so_far;
+            prefix[right] = min_len;
         }
         
-        return ans >= INT_MAX / 2 ? -1 : ans;
+        // 2. Build the suffix array using a sliding window from right to left
+        sum = 0;
+        int right_ptr = n - 1;
+        min_len = INF;
+        for (int i = n - 1; i >= 0; --i) {
+            sum += arr[i];
+            while (sum > target && right_ptr >= i) {
+                sum -= arr[right_ptr];
+                right_ptr--;
+            }
+            if (sum == target) {
+                min_len = min(min_len, right_ptr - i + 1);
+            }
+            suffix[i] = min_len;
+        }
+        
+        // 3. Find the minimum sum of lengths for two non-overlapping sub-arrays
+        int ans = INF;
+        for (int i = 0; i < n - 1; ++i) {
+            if (prefix[i] != INF && suffix[i + 1] != INF) {
+                ans = min(ans, prefix[i] + suffix[i + 1]);
+            }
+        }
+        
+        return ans == INF ? -1 : ans;
     
     }
 };

@@ -11,26 +11,42 @@
 class Solution {
 public:
     ListNode* partition(ListNode* head, int x) {
-        if(!head ||!head->next ) return head;
-        ListNode*first=new ListNode(0),*second=new ListNode(0);
-        
-        ListNode*prev=first,*curr=head,*temp=second;
-        while(curr){
-            if(curr->val<x){
-                prev->next=curr;
-                prev=prev->next;
-                curr=curr->next;
+        if (!head || !head->next) return head;
+
+        ListNode *lessHead = nullptr, *lessTail = nullptr;
+        ListNode *greaterHead = nullptr, *greaterTail = nullptr;
+
+        while (head) {
+            if (head->val < x) {
+                if (!lessHead) {
+                    lessHead = lessTail = head;
+                } else {
+                    lessTail->next = head;
+                    lessTail = lessTail->next;
+                }
+            } else {
+                if (!greaterHead) {
+                    greaterHead = greaterTail = head;
+                } else {
+                    greaterTail->next = head;
+                    greaterTail = greaterTail->next;
+                }
             }
-            else{
-                temp->next=curr;
-                temp=temp->next;
-                curr=curr->next;
-            }}
-           temp->next=nullptr;
-           prev->next=second->next;
-           head=first->next;
-           delete first;
-           delete second;
-        return head;
+            head = head->next;
+        }
+
+        // Terminate the >= x list to prevent cycles
+        if (greaterTail) {
+            greaterTail->next = nullptr;
+        }
+
+        // If there are no nodes < x, return the >= x list directly
+        if (!lessHead) {
+            return greaterHead;
+        }
+
+        // Connect the two partitions
+        lessTail->next = greaterHead;
+        return lessHead;
     }
 };

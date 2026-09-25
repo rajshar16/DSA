@@ -8,34 +8,29 @@
  *     ListNode(int x, ListNode *next) : val(x), next(next) {}
  * };
  */
-
 class Solution {
 public:
     ListNode* partition(ListNode* head, int x) {
-        if (!head) return nullptr;
+        if(!head ||!head->next ) return head;
+        ListNode*first=new ListNode(0),*second=new ListNode(0);
         
-        vector<ListNode*> nodes;
-        
-        // 1. Collect nodes < x
-        ListNode* temp = head;
-        while (temp != nullptr) {
-            if (temp->val < x) nodes.push_back(temp);
-            temp = temp->next;
-        }
-        
-        // 2. Collect nodes >= x
-        temp = head;
-        while (temp != nullptr) {
-            if (temp->val >= x) nodes.push_back(temp);
-            temp = temp->next;
-        }
-        
-        // 3. Relink all nodes in order
-        for (int i = 0; i < nodes.size() - 1; ++i) {
-            nodes[i]->next = nodes[i + 1];
-        }
-        nodes.back()->next = nullptr; // Crucial to prevent a cycle
-        
-        return nodes[0];
+        ListNode*prev=first,*curr=head,*temp=second;
+        while(curr){
+            if(curr->val<x){
+                prev->next=curr;
+                prev=prev->next;
+                curr=curr->next;
+            }
+            else{
+                temp->next=curr;
+                temp=temp->next;
+                curr=curr->next;
+            }}
+           temp->next=nullptr;
+           prev->next=second->next;
+           head=first->next;
+           delete first;
+           delete second;
+        return head;
     }
 };

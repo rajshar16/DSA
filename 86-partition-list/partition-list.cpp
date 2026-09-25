@@ -8,36 +8,34 @@
  *     ListNode(int x, ListNode *next) : val(x), next(next) {}
  * };
  */
- class Solution {
+
+class Solution {
 public:
     ListNode* partition(ListNode* head, int x) {
         if (!head) return nullptr;
         
-        vector<int> less_val;
-        vector<int> greater_val;
+        vector<ListNode*> nodes;
         
-        // 1. Separate values into two vectors
+        // 1. Collect nodes < x
         ListNode* temp = head;
         while (temp != nullptr) {
-            if (temp->val < x) {
-                less_val.push_back(temp->val);
-            } else {
-                greater_val.push_back(temp->val);
-            }
+            if (temp->val < x) nodes.push_back(temp);
             temp = temp->next;
         }
         
-        // 2. Overwrite the linked list with partitioned values
+        // 2. Collect nodes >= x
         temp = head;
-        for (int val : less_val) {
-            temp->val = val;
-            temp = temp->next;
-        }
-        for (int val : greater_val) {
-            temp->val = val;
+        while (temp != nullptr) {
+            if (temp->val >= x) nodes.push_back(temp);
             temp = temp->next;
         }
         
-        return head;
+        // 3. Relink all nodes in order
+        for (int i = 0; i < nodes.size() - 1; ++i) {
+            nodes[i]->next = nodes[i + 1];
+        }
+        nodes.back()->next = nullptr; // Crucial to prevent a cycle
+        
+        return nodes[0];
     }
 };

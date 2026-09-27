@@ -1,41 +1,27 @@
 class Solution {
 public:
     string reverseParentheses(string s) {
-        stack<char> st;
+        stack<int> st;
         
         for (int i = 0; i < s.size(); i++) {
-            if (s[i] != ')') {
-                // Push '(' and alphabets
-                st.push(s[i]);
-            } else {
-                // Pop all characters till '(' into a temp string (reverses order)
-                string temp = "";
-                while (!st.empty() && st.top() != '(') {
-                    temp += st.top();
-                    st.pop();
-                }
-                
-                // Pop the opening '('
-                if (!st.empty()) {
-                    st.pop();
-                }
-                
-                // Push the reversed characters back into the stack
-                for (char c : temp) {
-                    st.push(c);
-                }
+            if (s[i] == '(') {
+                st.push(i); // Store index of '('
+            } else if (s[i] == ')') {
+                int start = st.top();
+                st.pop();
+                // Reverse everything strictly inside the current '(' and ')'
+                reverse(s.begin() + start + 1, s.begin() + i);
             }
         }
         
-        // Extract the final string from the stack
+        // Filter out '(' and ')' to build the final string
         string ans = "";
-        while (!st.empty()) {
-            ans += st.top();
-            st.pop();
+        for (char c : s) {
+            if (c != '(' && c != ')') {
+                ans += c;
+            }
         }
         
-        // Since popping from stack gives reverse order, reverse it once at the end
-        reverse(ans.begin(), ans.end());
         return ans;
     }
 };

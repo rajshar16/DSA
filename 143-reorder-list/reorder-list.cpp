@@ -12,25 +12,34 @@ class Solution {
 public:
     void reorderList(ListNode* head) {
         if (!head || !head->next) return;
-        ListNode* curr= head;
-        vector<ListNode*> arr;
-        while(curr){
-            arr.push_back(curr);
-            curr=curr->next;
-        }
-        int left=0,right=arr.size()-1;
-        while(left < right) {
-            // Point the left node to the right node
-            arr[left]->next = arr[right];
-            left++;
-        // If they meet in the middle, break early to prevent cycles
-            if (left == right) break;
-            
-            // Point the right node to the next left node
-            arr[right]->next = arr[left];
-            right--;
+        ListNode*slow,*fast;
+        slow=fast=head;
+        while(fast&& fast->next){
+        fast=fast->next->next;
+        slow=slow->next;
     }
-    // 3. IMPORTANT: Terminate the last node to prevent cycles!
-        arr[left]->next = nullptr;
+    ListNode*curr=slow->next;
+    slow->next=nullptr;
+    ListNode *prev=nullptr;
+    ListNode*fut=nullptr;
+    while(curr){
+        fut=curr->next;
+        curr->next=prev;
+        prev=curr;
+        curr=fut;
+    }
+    ListNode*head1,*head2;
+    head1=head;
+    head2=prev;
+    while(head2){
+ListNode *t1 = head1->next;
+            ListNode *t2 = head2->next;
+
+            head1->next = head2;
+            head2->next = t1;
+
+            head1 = t1;
+            head2 = t2;
+    }
     }
 };
